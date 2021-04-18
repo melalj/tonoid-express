@@ -1,0 +1,39 @@
+{
+  "name": "@tonoid/express",
+  "version": "0.0.1",
+  "description": "Express plugin for @tonoid/helpers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/melalj/tonoid-express.git"
+  },
+  "keywords": [
+    "express",
+    "http server",
+    "http",
+    "helper",
+    "backend",
+    "microservice"
+  ],
+  "author": "Simo Elalj <simo@tonoid.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/melalj/tonoid-express/issues"
+  },
+  "homepage": "https://github.com/melalj/tonoid-express",
+  "devDependencies": {
+    "eslint": "7.24.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-plugin-import": "2.22.1"
+  },
+  "dependencies": {
+    "express": "4.17.1",
+    "compression": "1.7.4",
+    "express-winston": "4.1.0",
+    "winston": "3.3.3",
+    "express-async-handler": "1.1.4"
+  }
+}
