@@ -108,7 +108,15 @@ module.exports = ({
 
     // API Endpoints
     endpoints.forEach((endpoint) => {
-      app.use(endpoint.path, endpoint.handler({ asyncHandler, getRouter, app }));
+      if (endpoint.middleware) {
+        app.use(
+          endpoint.path,
+          endpoint.middleware,
+          endpoint.handler({ asyncHandler, getRouter, app }),
+        );
+      } else {
+        app.use(endpoint.path, endpoint.handler({ asyncHandler, getRouter, app }));
+      }
     });
 
     // Page not found
