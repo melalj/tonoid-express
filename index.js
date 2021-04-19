@@ -5,12 +5,16 @@ const compression = require('compression');
 
 module.exports = ({
   port = process.env.EXPRESS_PORT || 80,
+  host = process.env.EXPRESS_HOST || '0.0.0.0',
   endpoints = [],
   isHTML = false,
+  extraMiddlewares = null,
   jsonLog = process.env.NODE_ENV === 'production',
 }) => ({
   name: 'express',
   init: async ({ logger }) => {
+    let httpServer;
+
     // Helper to get route
     const getRouter = () => express.Router();
 
@@ -25,6 +29,11 @@ module.exports = ({
     // health check
     app.get('/~health', (req, res) => res.send('ok'));
 
+    // extra Middlewares
+    if (extraMiddlewares) {
+      extraMiddlewares(app);
+    }
+
     // Remove trailing slashes
     app.use((req, res, next) => {
       if (req.path.substr(-1) === '/' && req.path.length > 1) {
@@ -37,9 +46,9 @@ module.exports = ({
 
     app.use(compression());
 
-    if (logger.format && logger.winston) {
+    if (logger.winstonInstance) {
       const defaultRequestLogger = expressWinston.logger({
-        winstonInstance: logger,
+        winstonInstance: logger.winstonInstance,
         msg: '{{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms {{req.ip}}',
         expressFormat: false,
         meta: false,
@@ -113,10 +122,10 @@ module.exports = ({
     app.use((err, req, res, next) => {
       const status = err.status || 500;
       if (status >= 500) {
-        logger.outputError(`${err.message} (${err.stack.replace(/\n/g, ', ')})`);
-        if (logger.gcloudErrorsMiddleWare) {
-          return logger.gcloudErrorsMiddleWare(err, req, res, next);
-        }
+        logger.error(`${err.message} (${err.stack.replace(/\n/g, ', ')})`);
+        // if (logger.gcloudErrorsMiddleWare) {
+        //   return logger.gcloudErrorsMiddleWare(err, req, res, next);
+        // }
       }
       return next(err);
     });
@@ -139,16 +148,16 @@ module.exports = ({
     });
 
     // Init
-    const httpServer = await new Promise((resolve, reject) => {
-      const httpServerResult = app.listen(port, (err) => {
+    await new Promise((resolve, reject) => {
+      httpServer = app.listen(port, host, (err) => {
         if (err) return reject(err);
-        logger.info(` ✔ Listening to http://localhost:${port}`);
-        return resolve(httpServerResult);
+        logger.info(` ✔ Listening to http://${host}:${port}`);
+        return resolve(true);
       });
     });
 
     // Close function
-    const close = new Promise((resolve, reject) => {
+    const close = () => new Promise((resolve, reject) => {
       httpServer.close((err) => {
         if (err) return reject(err);
         return resolve(true);
@@ -159,6 +168,7 @@ module.exports = ({
       name: 'express',
       close,
       app,
+      httpServer,
     };
   },
 });
