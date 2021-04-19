@@ -1,5 +1,10 @@
 # @tonoid/express
 
+[![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://github.com/melalj/tonoid-express)
+[![GitHub stars](https://img.shields.io/github/stars/melalj/tonoid-express.svg?style=social&label=Star&maxAge=2592003)]()
+
+[![npm](https://img.shields.io/npm/dt/@tonoid/express.svg)]() [![npm](https://img.shields.io/npm/v/@tonoid/express.svg)]() [![npm](https://img.shields.io/npm/l/@tonoid/express.svg)]() [![David](https://img.shields.io/david/melalj/tonoid-express.svg)]()
+
 Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 
 ## Init options
@@ -52,4 +57,4 @@ init([
 
 ## Credits
 
-This module is maintained by [tonoid](https://www.tonoid.com)
+This module is maintained by [Simo Elalj](https://twitter.com/simoelalj) @[tonoid](https://www.tonoid.com)
