@@ -2,6 +2,7 @@ const express = require('express');
 const expressWinston = require('express-winston');
 const asyncHandler = require('express-async-handler');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
 
 module.exports = ({
   port = process.env.EXPRESS_PORT || 80,
@@ -25,6 +26,7 @@ module.exports = ({
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
     app.use(express.json({ limit: '10mb' }));
     app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10000 }));
+    app.use(cookieParser());
 
     // health check
     app.get('/~health', (req, res) => res.send('ok'));

@@ -1,6 +1,6 @@
 {
   "name": "@tonoid/express",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Express plugin for @tonoid/helpers",
   "main": "index.js",
   "scripts": {
@@ -33,6 +33,7 @@
     "express": "4.17.1",
     "compression": "1.7.4",
     "express-winston": "4.1.0",
+    "cookie-parser": "1.4.5",
     "winston": "3.3.3",
     "express-async-handler": "1.1.4"
   }
