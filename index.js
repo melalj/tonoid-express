@@ -119,19 +119,21 @@ module.exports = ({
 
     // API Endpoints
     endpoints.forEach((endpoint) => {
+      const expressCtx = {
+        asyncHandler,
+        getRouter,
+        throwError,
+        app,
+      };
+
       if (endpoint.middleware) {
         app.use(
           endpoint.path,
           endpoint.middleware,
-          endpoint.handler({
-            asyncHandler,
-            getRouter,
-            throwError,
-            app,
-          }),
+          endpoint.handler(expressCtx),
         );
       } else {
-        app.use(endpoint.path, endpoint.handler({ asyncHandler, getRouter, app }));
+        app.use(endpoint.path, endpoint.handler(expressCtx));
       }
     });
 

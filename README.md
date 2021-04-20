@@ -19,11 +19,15 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 ## Exported context attributes
 
 - `.close()`: Close mongo client
-- `.getRouter()`: Get database instance
 - `.app`: Express app instance
 - `.httpServer`: http server instance
-- `.asyncHandler()`: Async handler alias
+
+## Handler available parameters
+
+- `.getRouter()`: Get database instance
 - `.throwError()`: Throw an error with errorCode (HTTP code)
+- `.app`: Express app instance
+- `.asyncHandler()`: Async handler alias
 
 ## Usage example
 
