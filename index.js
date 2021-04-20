@@ -19,6 +19,15 @@ module.exports = ({
     // Helper to get route
     const getRouter = () => express.Router();
 
+    const throwError = (message, errorCode, state) => {
+      const err = new Error(message);
+      err.status = errorCode;
+      if (state) {
+        err.state = state;
+      }
+      throw err;
+    };
+
     // Bootstrap express server
     const app = express();
 
@@ -114,7 +123,12 @@ module.exports = ({
         app.use(
           endpoint.path,
           endpoint.middleware,
-          endpoint.handler({ asyncHandler, getRouter, app }),
+          endpoint.handler({
+            asyncHandler,
+            getRouter,
+            throwError,
+            app,
+          }),
         );
       } else {
         app.use(endpoint.path, endpoint.handler({ asyncHandler, getRouter, app }));

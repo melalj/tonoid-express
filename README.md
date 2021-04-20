@@ -23,6 +23,7 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 - `.app`: Express app instance
 - `.httpServer`: http server instance
 - `.asyncHandler()`: Async handler alias
+- `.throwError()`: Throw an error with errorCode (HTTP code)
 
 ## Usage example
 
