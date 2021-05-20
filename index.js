@@ -8,6 +8,7 @@ module.exports = ({
   port = process.env.EXPRESS_PORT || 80,
   host = process.env.EXPRESS_HOST || '0.0.0.0',
   endpoints = [],
+  rawBodyEndpoints = [],
   isHTML = false,
   extraMiddlewares = null,
   jsonLog = process.env.NODE_ENV === 'production',
@@ -30,6 +31,11 @@ module.exports = ({
 
     // Bootstrap express server
     const app = express();
+
+    // rawBodyEndpoints
+    rawBodyEndpoints.forEach((endpoint) => {
+      app.use(endpoint, express.raw({ type: '*/*' }));
+    });
 
     app.disable('x-powered-by');
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);

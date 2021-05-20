@@ -15,6 +15,7 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 - `endpoints`: (defaults: `[]`):
   - `endpoints[].path`: Endpoint path
   - `endpoints[].handler`: Endpoint handler (function)
+- `rawBodyEndpoints`: (defaults: `[]`): List of endpoints that need raw body (useful for stripe webhook)
 
 ## Exported context attributes
 
