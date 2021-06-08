@@ -11,6 +11,11 @@ module.exports = ({
   rawBodyEndpoints = [],
   isHTML = false,
   extraMiddlewares = null,
+  enableJsonBody = true,
+  enableFormBody = true,
+  enableCookies = true,
+  enableHealth = true,
+  enableCompression = true,
   jsonLog = process.env.NODE_ENV === 'production',
 }) => ({
   name: 'express',
@@ -39,12 +44,12 @@ module.exports = ({
 
     app.disable('x-powered-by');
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
-    app.use(express.json({ limit: '10mb' }));
-    app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10000 }));
-    app.use(cookieParser());
+    if (enableJsonBody) app.use(express.json({ limit: '10mb' }));
+    if (enableFormBody) app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10000 }));
+    if (enableCookies) app.use(cookieParser());
 
     // health check
-    app.get('/~health', (req, res) => res.send('ok'));
+    if (enableHealth) app.get('/~health', (req, res) => res.send('ok'));
 
     // extra Middlewares
     if (extraMiddlewares) {
@@ -61,7 +66,7 @@ module.exports = ({
       }
     });
 
-    app.use(compression());
+    if (enableCompression) app.use(compression());
 
     if (logger.winstonInstance) {
       const defaultRequestLogger = expressWinston.logger({

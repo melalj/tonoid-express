@@ -1,6 +1,6 @@
 {
   "name": "@tonoid/express",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Express plugin for @tonoid/helpers",
   "main": "index.js",
   "scripts": {
