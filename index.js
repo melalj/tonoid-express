@@ -53,7 +53,7 @@ module.exports = ({
 
     // extra Middlewares
     if (extraMiddlewares) {
-      extraMiddlewares(app);
+      extraMiddlewares(app, { express });
     }
 
     // Remove trailing slashes
