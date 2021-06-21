@@ -98,7 +98,7 @@ module.exports = ({
           const httpRequest = {};
           const meta = {};
           if (req) {
-            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
+            const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip || '').split(',')[0];
             meta.httpRequest = httpRequest;
             httpRequest.requestMethod = req.method;
             httpRequest.requestUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
@@ -168,9 +168,9 @@ module.exports = ({
     app.use((err, req, res, next) => { // eslint-disable-line
       const status = err.status || 500;
       res.status(status);
-      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
+      const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip || '').split(',')[0];
       if (process.env.NODE_ENV !== 'production' || ip === process.env.EXPRESS_DEBUG_IP) {
-        res.send({
+        return res.send({
           error: err.message,
           status,
           trace: err,
