@@ -160,9 +160,6 @@ module.exports = ({
       const status = err.status || 500;
       if (status >= 500) {
         logger.error(`${err.message} (${err.stack.replace(/\n/g, ', ')})`);
-        // if (logger.gcloudErrorsMiddleWare) {
-        //   return logger.gcloudErrorsMiddleWare(err, req, res, next);
-        // }
       }
       return next(err);
     });
@@ -171,17 +168,18 @@ module.exports = ({
     app.use((err, req, res, next) => { // eslint-disable-line
       const status = err.status || 500;
       res.status(status);
-      if (process.env.NODE_ENV === 'production') {
-        if (isHTML && req.accepts('html')) return res.render('500', req.defaultVars);
-        const message = (status >= 500) ? 'Internal server error' : err.message;
-        return res.send({ error: message });
+      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
+      if (process.env.NODE_ENV !== 'production' || ip === process.env.EXPRESS_DEBUG_IP) {
+        res.send({
+          error: err.message,
+          status,
+          trace: err,
+          stack: err.stack,
+        });
       }
-      res.send({
-        error: err.message,
-        status,
-        trace: err,
-        stack: err.stack,
-      });
+      if (isHTML && req.accepts('html')) return res.render('500', req.defaultVars);
+      const message = (status >= 500) ? 'Internal server error' : err.message;
+      return res.send({ error: message });
     });
 
     // Init
