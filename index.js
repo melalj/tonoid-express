@@ -159,7 +159,7 @@ module.exports = ({
     app.use((err, req, res, next) => {
       const status = err.status || 500;
       if (status >= 500) {
-        logger.error(`${err.message} (${err.stack.replace(/\n/g, ', ')})`);
+        logger.error(`${err.message} (${(err.stack || '').replace(/\n/g, ', ')})`);
       }
       return next(err);
     });
