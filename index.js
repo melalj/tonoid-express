@@ -11,6 +11,7 @@ module.exports = ({
   rawBodyEndpoints = [],
   isHTML = false,
   extraMiddlewares = null,
+  extraMiddlewaresAfter = null,
   enableJsonBody = true,
   enableFormBody = true,
   enableCookies = true,
@@ -154,6 +155,11 @@ module.exports = ({
       if (isHTML && req.accepts('html')) return res.render('404', req.defaultVars);
       return res.send({ error: 'Not found' });
     });
+
+    // extra Middlewares After
+    if (extraMiddlewaresAfter) {
+      extraMiddlewaresAfter(app, { express });
+    }
 
     // Log Error
     app.use((err, req, res, next) => {

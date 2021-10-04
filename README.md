@@ -9,7 +9,8 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 
 - `port`: (Number, defaults: `process.env.EXPRESS_PORT || 80`) Express http port.
 - `host`: (String, defaults: `process.env.EXPRESS_HOST || '0.0.0.0`) Express http host.
-- `extraMiddleware(app, { express })`: (Function) Extra Middle to add to the express app before setting the endpoints
+- `extraMiddlewares(app, { express })`: (Function) Extra Middle to add to the express app before setting the endpoints
+- `extraMiddlewaresAfter(app, { express })`: (Function) Extra Middle to add to the express app after setting the endpoints
 - `isHTML`: (Boolean, default: `false`) If the error message should render in HTML
 - `jsonLog`: (Boolean, default: `process.env.NODE_ENV === 'production`) If we want to output the logs in JSON format (useful when we use Stackdriver)
 - `endpoints`: (defaults: `[]`):
