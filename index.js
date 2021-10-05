@@ -11,7 +11,9 @@ module.exports = ({
   rawBodyEndpoints = [],
   isHTML = false,
   extraMiddlewares = null,
-  extraMiddlewaresAfter = null,
+  extraMiddlewaresAfterEndpoint = null,
+  extraMiddlewaresAfterNotFound = null,
+  extraMiddlewaresAfterError = null,
   enableJsonBody = true,
   enableFormBody = true,
   enableCookies = true,
@@ -149,6 +151,11 @@ module.exports = ({
       }
     });
 
+    // extra Middlewares After Endpoint
+    if (extraMiddlewaresAfterEndpoint) {
+      extraMiddlewaresAfterEndpoint(app, { express });
+    }
+
     // Page not found
     app.use((req, res) => {
       res.status(404);
@@ -156,9 +163,9 @@ module.exports = ({
       return res.send({ error: 'Not found' });
     });
 
-    // extra Middlewares After
-    if (extraMiddlewaresAfter) {
-      extraMiddlewaresAfter(app, { express });
+    // extra Middlewares After NotFound
+    if (extraMiddlewaresAfterNotFound) {
+      extraMiddlewaresAfterNotFound(app, { express });
     }
 
     // Log Error
@@ -187,6 +194,11 @@ module.exports = ({
       const message = (status >= 500) ? 'Internal server error' : err.message;
       return res.send({ error: message });
     });
+
+    // extra Middlewares After Error
+    if (extraMiddlewaresAfterError) {
+      extraMiddlewaresAfterError(app, { express });
+    }
 
     // Init
     await new Promise((resolve, reject) => {
