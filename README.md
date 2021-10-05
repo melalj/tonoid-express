@@ -7,12 +7,13 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 
 ## Init options
 
-- `port`: (Number, defaults: `process.env.EXPRESS_PORT || 80`) Express http port.
+- `port`: (Number, defaults: `process.env.EXPRESS_PORT || process.env.PORT || 80`) Express http port.
 - `host`: (String, defaults: `process.env.EXPRESS_HOST || '0.0.0.0`) Express http host.
 - `extraMiddlewares(app, { express })`: (Function) Extra Middle to add to the express app before setting the endpoints
 - `extraMiddlewaresAfterEndpoint(app, { express })`: (Function) Extra Middle to add to the express app after endpoints
 - `extraMiddlewaresAfterNotFound(app, { express })`: (Function) Extra Middle to add to the express app after handling 404
 - `extraMiddlewaresAfterError(app, { express })`: (Function) Extra Middle to add to the express app after handling error
+- `notFoundHandler(isHTML)(res, req)`: (Function) Page not found handler
 - `isHTML`: (Boolean, default: `false`) If the error message should render in HTML
 - `jsonLog`: (Boolean, default: `process.env.NODE_ENV === 'production`) If we want to output the logs in JSON format (useful when we use Stackdriver)
 - `endpoints`: (defaults: `[]`):
@@ -24,6 +25,7 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 - `enableCookies`: (default: `true`)
 - `enableHealth`: (default: `true`)
 - `enableCompression`: (default: `true`)
+- `removeTrailingSlashes`: (default: `true`)
 
 ## Exported context attributes
 

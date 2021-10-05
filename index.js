@@ -4,8 +4,14 @@ const asyncHandler = require('express-async-handler');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 
+const notFoundHandlerDefault = (isHTML) => (req, res) => {
+  res.status(404);
+  if (isHTML && req.accepts('html')) return res.render('404');
+  return res.send({ error: 'Not found' });
+};
+
 module.exports = ({
-  port = process.env.EXPRESS_PORT || 80,
+  port = process.env.EXPRESS_PORT || process.env.PORT || 80,
   host = process.env.EXPRESS_HOST || '0.0.0.0',
   endpoints = [],
   rawBodyEndpoints = [],
@@ -18,7 +24,9 @@ module.exports = ({
   enableFormBody = true,
   enableCookies = true,
   enableHealth = true,
+  removeTrailingSlashes = true,
   enableCompression = true,
+  notFoundHandler = notFoundHandlerDefault,
   jsonLog = process.env.NODE_ENV === 'production',
 }) => ({
   name: 'express',
@@ -60,14 +68,16 @@ module.exports = ({
     }
 
     // Remove trailing slashes
-    app.use((req, res, next) => {
-      if (req.path.substr(-1) === '/' && req.path.length > 1) {
-        const query = req.url.slice(req.path.length);
-        res.redirect(301, req.path.slice(0, -1) + query);
-      } else {
-        next();
-      }
-    });
+    if (removeTrailingSlashes) {
+      app.use((req, res, next) => {
+        if (req.path.substr(-1) === '/' && req.path.length > 1) {
+          const query = req.url.slice(req.path.length);
+          res.redirect(301, req.path.slice(0, -1) + query);
+        } else {
+          next();
+        }
+      });
+    }
 
     if (enableCompression) app.use(compression());
 
@@ -157,11 +167,7 @@ module.exports = ({
     }
 
     // Page not found
-    app.use((req, res) => {
-      res.status(404);
-      if (isHTML && req.accepts('html')) return res.render('404', req.defaultVars);
-      return res.send({ error: 'Not found' });
-    });
+    app.use(notFoundHandler(isHTML));
 
     // extra Middlewares After NotFound
     if (extraMiddlewaresAfterNotFound) {
@@ -190,7 +196,7 @@ module.exports = ({
           stack: err.stack,
         });
       }
-      if (isHTML && req.accepts('html')) return res.render('500', req.defaultVars);
+      if (isHTML && req.accepts('html')) return res.render('500');
       const message = (status >= 500) ? 'Internal server error' : err.message;
       return res.send({ error: message });
     });
