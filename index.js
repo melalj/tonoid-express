@@ -11,8 +11,8 @@ const notFoundHandlerDefault = (isHTML) => (req, res) => {
 };
 
 module.exports = ({
-  port = process.env.EXPRESS_PORT || process.env.PORT || 80,
-  host = process.env.EXPRESS_HOST || '0.0.0.0',
+  port,
+  host,
   endpoints = [],
   rawBodyEndpoints = [],
   isHTML = false,
@@ -32,6 +32,9 @@ module.exports = ({
   name: 'express',
   init: async ({ logger }) => {
     let httpServer;
+
+    const hostParam = host || process.env.EXPRESS_HOST || '0.0.0.0';
+    const portParam = port || process.env.EXPRESS_PORT || process.env.PORT || 80;
 
     // Helper to get route
     const getRouter = () => express.Router();
@@ -208,9 +211,9 @@ module.exports = ({
 
     // Init
     await new Promise((resolve, reject) => {
-      httpServer = app.listen(port, host, (err) => {
+      httpServer = app.listen(portParam, hostParam, (err) => {
         if (err) return reject(err);
-        logger.info(` ✔ Listening to http://${host}:${port}`);
+        logger.info(` ✔ Listening to http://${hostParam}:${portParam}`);
         return resolve(true);
       });
     });
