@@ -16,6 +16,7 @@ module.exports = ({
   endpoints = [],
   rawBodyEndpoints = [],
   isHTML = false,
+  extraFirstMiddlewares = null,
   extraMiddlewares = null,
   extraMiddlewaresAfterEndpoint = null,
   extraMiddlewaresAfterNotFound = null,
@@ -51,15 +52,20 @@ module.exports = ({
     // Bootstrap express server
     const app = express();
 
+    // extra First Middlewares
+    if (extraFirstMiddlewares) {
+      extraFirstMiddlewares(app, { express });
+    }
+
     // rawBodyEndpoints
     rawBodyEndpoints.forEach((endpoint) => {
-      app.use(endpoint, express.raw({ type: '*/*' }));
+      app.use(endpoint, express.raw({ type: '*/*', limit: process.env.EXPRESS_RAW_LIMIT || '50mb' }));
     });
 
     app.disable('x-powered-by');
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
-    if (enableJsonBody) app.use(express.json({ limit: '10mb' }));
-    if (enableFormBody) app.use(express.urlencoded({ limit: '10mb', extended: true, parameterLimit: 10000 }));
+    if (enableJsonBody) app.use(express.json({ limit: process.env.EXPRESS_JSON_LIMIT || '10mb' }));
+    if (enableFormBody) app.use(express.urlencoded({ limit: process.env.EXPRESS_BODY_LIMIT || '10mb', extended: true, parameterLimit: 10000 }));
     if (enableCookies) app.use(cookieParser());
 
     // health check

@@ -9,7 +9,7 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 
 - `port`: (Number, defaults: `process.env.EXPRESS_PORT || process.env.PORT || 80`) Express http port.
 - `host`: (String, defaults: `process.env.EXPRESS_HOST || '0.0.0.0`) Express http host.
-- `extraMiddlewares(app, { express })`: (Function) Extra Middle to add to the express app before setting the endpoints
+- `extraFirstMiddlewares(app, { express })`: (Function) Extra Middle to add just after the express initilization
 - `extraMiddlewaresAfterEndpoint(app, { express })`: (Function) Extra Middle to add to the express app after endpoints
 - `extraMiddlewaresAfterNotFound(app, { express })`: (Function) Extra Middle to add to the express app after handling 404
 - `extraMiddlewaresAfterError(app, { express })`: (Function) Extra Middle to add to the express app after handling error
@@ -19,13 +19,21 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 - `endpoints`: (defaults: `[]`):
   - `endpoints[].path`: Endpoint path
   - `endpoints[].handler`: Endpoint handler (function)
-- `rawBodyEndpoints`: (defaults: `[]`): List of endpoints that need raw body (useful for stripe webhook)
+- `rawBodyEndpoints`: (defaults: `[]`): List of endpoints that need raw body (useful for stripe webhook, or file uploads)
 - `enableJsonBody`: (default: `true`)
 - `enableFormBody`: (default: `true`)
 - `enableCookies`: (default: `true`)
 - `enableHealth`: (default: `true`)
 - `enableCompression`: (default: `true`)
 - `removeTrailingSlashes`: (default: `true`)
+
+## Environment variables
+
+- `EXPRESS_HOST`: (default: `0.0.0.0`) HTTP host
+- `EXPRESS_PORT`: (default: `80`) HTTP port
+- `EXPRESS_RAW_LIMIT`: (default: `50mb`) Limit for raw body parser
+- `EXPRESS_JSON_LIMIT`: (default: `10mb`) Limit for json body parser
+- `EXPRESS_BODY_LIMIT`: (default: `10mb`) Limit for body body parser
 
 ## Exported context attributes
 
