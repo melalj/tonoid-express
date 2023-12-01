@@ -21,6 +21,9 @@ module.exports = ({
   port,
   host,
   corsWhitelist = [],
+  corsAllowHeaders = 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  corsAllowMethods = 'GET, POST, PUT, DELETE, OPTIONS',
+  corsAllowCredentials = 'true',
   endpoints = [],
   rawBodyEndpoints = [],
   isHTML = false,
@@ -83,9 +86,9 @@ module.exports = ({
         // Check if the origin is in the whitelist
         if (corsWhitelist.includes(origin)) {
           res.header('Access-Control-Allow-Origin', origin);
-          res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-          res.header('Access-Control-Allow-Credentials', 'true');
-          res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+          res.header('Access-Control-Allow-Methods', corsAllowMethods);
+          res.header('Access-Control-Allow-Credentials', corsAllowCredentials);
+          res.header('Access-Control-Allow-Headers', corsAllowHeaders);
 
           // Check if it's a preflight request
           if (req.method === 'OPTIONS') {
