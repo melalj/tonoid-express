@@ -10,9 +10,17 @@ const notFoundHandlerDefault = (isHTML) => (req, res) => {
   return res.send({ error: 'Not found' });
 };
 
+function getOriginFromReferer(referer) {
+  if (!referer) return null;
+  const parsedUrl = new URL(referer);
+  const port = parsedUrl.port ? `:${parsedUrl.port}` : '';
+  return `${parsedUrl.protocol}//${parsedUrl.hostname}${port}`;
+}
+
 module.exports = ({
   port,
   host,
+  corsWhitelist = [],
   endpoints = [],
   rawBodyEndpoints = [],
   isHTML = false,
@@ -67,6 +75,29 @@ module.exports = ({
     if (enableJsonBody) app.use(express.json({ limit: process.env.EXPRESS_JSON_LIMIT || '10mb' }));
     if (enableFormBody) app.use(express.urlencoded({ limit: process.env.EXPRESS_BODY_LIMIT || '10mb', extended: true, parameterLimit: 10000 }));
     if (enableCookies) app.use(cookieParser());
+
+    // Middleware to add CORS headers if the origin is valid
+    if (corsWhitelist.length) {
+      app.use((req, res, next) => {
+        const origin = req.headers.origin || getOriginFromReferer(req.headers.referer);
+        // Check if the origin is in the whitelist
+        if (corsWhitelist.includes(origin)) {
+          res.header('Access-Control-Allow-Origin', origin);
+          res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+          res.header('Access-Control-Allow-Credentials', 'true');
+          res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+          // Check if it's a preflight request
+          if (req.method === 'OPTIONS') {
+            // Send response with status 200 to indicate that the preflight request is accepted
+            res.sendStatus(200);
+            return;
+          }
+        }
+
+        next();
+      });
+    }
 
     // health check
     if (enableHealth) app.get('/~health', (req, res) => res.send('ok'));
