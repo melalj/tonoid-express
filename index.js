@@ -17,36 +17,39 @@ function getOriginFromReferer(referer) {
   return `${parsedUrl.protocol}//${parsedUrl.hostname}${port}`;
 }
 
-module.exports = ({
-  port,
-  host,
-  corsWhitelist = [],
-  corsAllowHeaders = 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-  corsAllowMethods = 'GET, POST, PUT, DELETE, OPTIONS',
-  corsAllowCredentials = 'true',
-  endpoints = [],
-  rawBodyEndpoints = [],
-  isHTML = false,
-  extraFirstMiddlewares = null,
-  extraMiddlewares = null,
-  extraMiddlewaresAfterEndpoint = null,
-  extraMiddlewaresAfterNotFound = null,
-  extraMiddlewaresAfterError = null,
-  enableJsonBody = true,
-  enableFormBody = true,
-  enableCookies = true,
-  enableHealth = true,
-  removeTrailingSlashes = true,
-  enableCompression = true,
-  notFoundHandler = notFoundHandlerDefault,
-  jsonLog = process.env.NODE_ENV === 'production',
-}) => ({
-  name: 'express',
+module.exports = (
+  {
+    host = process.env.EXPRESS_HOST || process.env.HOST || '0.0.0.0',
+    port = Number(process.env.EXPRESS_PORT || process.env.PORT || 80),
+    corsWhitelist = [],
+    corsAllowHeaders = 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+    corsAllowMethods = 'GET, POST, PUT, DELETE, OPTIONS',
+    corsAllowCredentials = 'true',
+    endpoints = [],
+    rawBodyEndpoints = [],
+    isHTML = false,
+    extraFirstMiddlewares = null,
+    extraMiddlewares = null,
+    extraMiddlewaresAfterEndpoint = null,
+    extraMiddlewaresAfterNotFound = null,
+    extraMiddlewaresAfterError = null,
+    enableJsonBody = true,
+    enableFormBody = true,
+    enableCookies = true,
+    enableHealth = true,
+    removeTrailingSlashes = true,
+    enableCompression = true,
+    notFoundHandler = notFoundHandlerDefault,
+    jsonLog = process.env.NODE_ENV === 'production',
+    rawLimit = process.env.EXPRESS_RAW_LIMIT || '50mb',
+    jsonLimit = process.env.EXPRESS_JSON_LIMIT || '10mb',
+    bodyLimit = process.env.EXPRESS_BODY_LIMIT || '10mb',
+  },
+  ctxName = 'express',
+) => ({
+  name: ctxName,
   init: async ({ logger }) => {
     let httpServer;
-
-    const hostParam = host || process.env.EXPRESS_HOST || '0.0.0.0';
-    const portParam = port || process.env.EXPRESS_PORT || process.env.PORT || 80;
 
     // Helper to get route
     const getRouter = () => express.Router();
@@ -70,13 +73,15 @@ module.exports = ({
 
     // rawBodyEndpoints
     rawBodyEndpoints.forEach((endpoint) => {
-      app.use(endpoint, express.raw({ type: '*/*', limit: process.env.EXPRESS_RAW_LIMIT || '50mb' }));
+      app.use(endpoint, express.raw({ type: '*/*', limit: rawLimit }));
     });
 
     app.disable('x-powered-by');
     app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
-    if (enableJsonBody) app.use(express.json({ limit: process.env.EXPRESS_JSON_LIMIT || '10mb' }));
-    if (enableFormBody) app.use(express.urlencoded({ limit: process.env.EXPRESS_BODY_LIMIT || '10mb', extended: true, parameterLimit: 10000 }));
+    if (enableJsonBody) app.use(express.json({ limit: jsonLimit }));
+    if (enableFormBody) {
+      app.use(express.urlencoded({ limit: bodyLimit, extended: true, parameterLimit: 10000 }));
+    }
     if (enableCookies) app.use(cookieParser());
 
     // Middleware to add CORS headers if the origin is valid
@@ -231,7 +236,7 @@ module.exports = ({
       const status = err.status || 500;
       res.status(status);
       const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip || '').split(',')[0];
-      if (process.env.NODE_ENV !== 'production' || ip === process.env.EXPRESS_DEBUG_IP) {
+      if (process.env.NODE_ENV !== 'production' || (process.env.EXPRESS_DEBUG_IP || '').split(',').includes(ip)) {
         return res.send({
           error: err.message,
           status,
@@ -251,9 +256,9 @@ module.exports = ({
 
     // Init
     await new Promise((resolve, reject) => {
-      httpServer = app.listen(portParam, hostParam, (err) => {
+      httpServer = app.listen(port, host, (err) => {
         if (err) return reject(err);
-        logger.info(` ✔ Listening to http://${hostParam}:${portParam}`);
+        logger.info(` ✔ Listening to http://${host}:${port}`);
         return resolve(true);
       });
     });
@@ -267,7 +272,7 @@ module.exports = ({
     });
 
     return {
-      name: 'express',
+      name: ctxName,
       close,
       app,
       httpServer,
