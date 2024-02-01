@@ -26,6 +26,7 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 - `enableHealth`: (default: `true`)
 - `enableCompression`: (default: `true`)
 - `removeTrailingSlashes`: (default: `true`)
+- `timeout`: (default: `90s`)
 
 ## Environment variables
 
@@ -34,6 +35,7 @@ Express plugin for [@tonoid/helpers](https://github.com/melalj/tonoid-helpers)
 - `EXPRESS_RAW_LIMIT`: (default: `50mb`) Limit for raw body parser
 - `EXPRESS_JSON_LIMIT`: (default: `10mb`) Limit for json body parser
 - `EXPRESS_BODY_LIMIT`: (default: `10mb`) Limit for body body parser
+- `EXPRESS_TIMEOUT`: (default: `90s`) Timeout to answer
 
 ## Exported context attributes
 

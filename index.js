@@ -3,6 +3,7 @@ const expressWinston = require('express-winston');
 const asyncHandler = require('express-async-handler');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
+const connectTimeout = require('connect-timeout');
 
 const notFoundHandlerDefault = (isHTML) => (req, res) => {
   res.status(404);
@@ -44,6 +45,7 @@ module.exports = (
     rawLimit = process.env.EXPRESS_RAW_LIMIT || '50mb',
     jsonLimit = process.env.EXPRESS_JSON_LIMIT || '10mb',
     bodyLimit = process.env.EXPRESS_BODY_LIMIT || '10mb',
+    timeout = process.env.EXPRESS_TIMEOUT || '90s',
   },
   ctxName = 'express',
 ) => ({
@@ -70,6 +72,9 @@ module.exports = (
     if (extraFirstMiddlewares) {
       extraFirstMiddlewares(app, { express });
     }
+
+    // Timeout
+    app.use(connectTimeout(timeout));
 
     // rawBodyEndpoints
     rawBodyEndpoints.forEach((endpoint) => {
