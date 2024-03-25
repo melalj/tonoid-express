@@ -13,9 +13,13 @@ const notFoundHandlerDefault = (isHTML) => (req, res) => {
 
 function getOriginFromReferer(referer) {
   if (!referer) return null;
-  const parsedUrl = new URL(referer);
-  const port = parsedUrl.port ? `:${parsedUrl.port}` : '';
-  return `${parsedUrl.protocol}//${parsedUrl.hostname}${port}`;
+  try {
+    const parsedUrl = new URL(referer);
+    const port = parsedUrl.port ? `:${parsedUrl.port}` : '';
+    return `${parsedUrl.protocol}//${parsedUrl.hostname}${port}`;
+  } catch (e) {
+    return null;
+  }
 }
 
 module.exports = (
